@@ -3,6 +3,7 @@
 \usepackage{palatino}
 \usepackage{mwe}
 \usepackage{slashbox}
+\usepackage{mathrsfs}
 
 \title{The \LaTeX Template for MCM Version 5.1.0b}
 \author{\small \href{http://www.latexstudio.net/}
@@ -96,16 +97,18 @@ Then we turn to the main part of building up our model and using it for analysis
 
 \section{Models}
 
-We hold the intention to create a dynamic model which can be controlled by manipulating some of the parameters. Specially, we assume that the "output" process is largely determined by individual characteristics rather than company's policy. However, we also want to create a set of tools that human resource managers can use to deal with the possible staff problems. With these in mind, we design two models that capture the process of "output" with different emphasis and simulate three possible strategy for the human resource manager: purely recruiting, purely promotion and the naive strategy. These models and simulations will help to solve the task 1-5 and even dig deeper insights about staff management. 
+We hold the intention to create a dynamic model which can be controlled by manipulating some of the parameters. Specially, we assume that the "output" process is largely determined by individual characteristics rather than company's policy. However, we also want to create a set of tools that human resource managers can use to deal with the possible staff problems. With these in mind, we design two models that capture the process of "output" with different emphasis and simulate three possible strategy for the human resource manager: purely recruiting, purely promoting and the "greedy" strategy. These models and simulations will help to solve the task 1-5 and even dig deeper insights about staff management. 
 
-To begin with, define $\Omega^{(t)}$ as the set of people who leave the company in period $t$, $\Theta^{(t)}$ as the set of people who is recruited in period $t$ and $\Gamma^{(t)}$ as the set of people who works in the company at the beginning of period $t$. $\Gamma^{(t)}$ can be seen as a subset of $V(G)$, but the former indicates people and the later indicates positions. It's obvious that $\Gamma^{(t)}=\Gamma^{(t-1)}\bigcup \Theta ^{(t-1)} \backslash \Omega^{(t-1)}$. Next we consider two ways of capturing churn.
+To begin with, define $\Omega^{(t)}$ as the set of people who leave the company in period $t$, $\Theta^{(t)}$ as the set of people who is recruited in period $t$ and $\Gamma^{(t)}$ as the set of people who work in the company at the beginning of period $t$. $\Gamma^{(t)}$ can be seen as a subset of $V(G)$, but the former indicates people and the later indicates positions. It's obvious that $\Gamma^{(t)}=\Gamma^{(t-1)}\bigcup \Theta ^{(t-1)} \backslash \Omega^{(t-1)}$. Next we consider two ways of capturing churn.
 
-\subsection{Model I : Capturing Churn Using Information Updating}
+\subsection{Understanding "Output"}
+\subsubsection{}{Model I : Capture Churn Using Information Accumulation}
 
-In this model, we capture the way an individual is influenced by other people's churn using information flow. In other words, the event of one person leaves acts as a influential message, transmitting across the network built earlier. We call it information effect. We assume that the information effect will accumulate, that is, the churn news this month and last month will have an equal and add-up influence in shaping the listen's decision. In order to make the model easier to control, we add an assumption that the a piece of information's effect will expire after six months. This modeling technique can be justified by the psychological evidence (\textbf{where to find any???}) that . To formalize this process in mathematical expressions, we first define some metric to measure the information effect. 
+\paragraph{Information Effect}
+In this model, we capture the way an individual is influenced by other people's leaving using information flow. In other words, the event of one person leaves acts as a influential message, transmitting across the network built earlier. We call it information effect. We assume that the information effect will accumulate, that is, the churn news this month and last month will have an equal and add-up influence in shaping the listen's decision. In order to make the model easier to control, we add an assumption that the a piece of information's effect will expire after six months. This modeling technique can be justified by the psychological evidence (\textbf{where to find any???}) that . To formalize this process in mathematical expressions, we first define some metric to measure the information effect. 
 
 \begin{itemize}
-\item Influence: The churn of staff in different level of positions has different influence. The churn of a senior manager and the churn of an inexperienced employee tend to have different influence. We denote the influence by $e_i$, $i=1,2,...,7$.
+\item Influence: The resign of staff in different level of positions has different influence. For example, the churn of a senior manager tend to have greater impact on one's decision compared with the churn of an inexperienced employee. We denote the influence by $e_i$, $i=1,2,...,7$.
 \item Distance: The distance between two nodes $i$ and $j$ is defined by the shortest path connecting $i$ and $j$ in the graph. It is the shortest possible way that the churn of $i$ reaches $j$. We denote it by $d_{ij}$.
 \item Information effect is proportional to the influence.
 \item Information effect is inversely proportional to the squared distance.
@@ -113,20 +116,43 @@ In this model, we capture the way an individual is influenced by other people's 
 \end{itemize}
 
 Formally, the information effect on individual $i\in \Gamma{(t)}$ can be calculated as follows:
-$$\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}$$
+$$\displaystyle \sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}$$
 
-Another aspect we take into consideration is called tenure effect. \textbf{where to find any???} The longer an individual stays in the same position, the more likely he/she is to be dissatisfied with his current condition. So we add a multiplier before the churn effect. In addition, this effect tend to increase faster as the tenure increases. 
+\paragraph{Tenure Effect}
+Another aspect we take into consideration is called tenure effect. \textbf{where to find any???} The longer an individual stays in the same position, the more likely he/she is to be dissatisfied with his current condition. We add a multiplier before the information effect to incorporate this additional effect. Besides, tenure effect tend to increase faster as tenure increases. So we simply adopt the quadratic form.
 
-Combine information flow and tenure effect, we develop a measure called dissatisfaction. 
-$$\displaystyle d_i^{(t)}=(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}~~~~\forall i\in \Gamma{(t)}
+Combine information effect and tenure effect, we develop a measure called "dissatisfaction" $\sigma_i^{(t)}$:
+
+$$\displaystyle \sigma_i^{(t)}=(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}~~~~\forall i\in \Gamma{(t)}
 $$
 
+Here $t_i^{(t)}$ is the length of individual $i$ has stayed in his current position at time $t$ and $k$ is the control parameter. 
 
-\subsection{Model II : Capturing Churn Using Bayesian Learning}
+\paragraph{Tolerance Threshold}
+For each individual, he has an internal tolerant threshold $\zeta_i$. When his dissatisfaction measure exceeds his threshold and he is not promoted, he will decide to leave this company. Tolerant threshold is not necessarily a fixed value. We assume it is uniformly distributed in the interval $[m_i-\frac{1}{2\alpha m_i},m_i+\frac{1}{2\alpha m_i}]$. We further assume common middle point $m_i$ for all individuals in the same level of position.
 
-Another way of capturing the effect from others can is to interpreted it as a learning process, which is widely discussed in network science and economics literature (\textbf{to be precise???}Jackson 2013; Acemoglu 2008;). The main context for this kind of modeling lies in that individuals perceives two states of the world or actions. In the settings of this problem, this two states are \textit{to leave}
 
-\lipsum[8] \eqref{aa}
+
+\subsubsection{Model II : Capture Churn Using Bayesian Learning}
+
+Another way of capturing the effect from others can is to interpreted it as a learning process, which is widely discussed in network science and economics literature (\textbf{to be precise???}Jackson 2013; Acemoglu 2008;). The main context for this kind of modeling lies in that individuals perceives two states of the world or actions and act in response based on Bayesian inference. In the settings of this problem, this two states are \textit{to leave} or \textit{to stay}.
+
+
+\subsection{Understanding "Input"}
+
+In this part, we combine two parts that a HR manager can control, namely supplement strategies and experience requirements, define the "input" in our model. To be more specific,  strategies here are the schemes of both promotions and recruitment. They are combinedly referred to as "recruitment strategy". The two most easily named strategies are purely promoting strategy and purely recruiting strategy
+
+\subsection{Simulations}
+
+
+
+\subsection{Model Extensions}
+
+There are several possible extensions to the models we have described before. These extensions are used to modify some of the bold but kind of restrictive assumptions made before and help to come closer to reality. Note that some of these new extensions need information about the real data of the company. Besides, being more precise means in the other direction that the extended models will not be as powerful and encompassing as the baseline models. Though the insights they are shedding lights on are basically the same.
+
+\subsubsection{}
+
+
 \begin{equation}
 a^2 \label{aa}
 \end{equation}
@@ -159,17 +185,6 @@ a^2 \label{aa}
 
 
 
-\textbf{We describe the model in two aspects:}
-
-
-Churn
-
- position for a long time will bring dissatisfaction to the staff.
-
-Churn threshold:
-
-
-Recruitment stategy: 
 
 
 We measure a worker's productivity according to his dissatisfaction:
@@ -179,30 +194,42 @@ The productivity of the firm is the sum of productivity of total individuals:
 $$P^{(t)}=\sum i\in \Gamma{(t)} $$
 
 
-
-
 \section{MLE Estimation of the Parameters}
 
-Next we briefly discuss how to estimate the parameter if we have additional information.
+In this part, we briefly discuss how to estimate the parameter in Model 1 if we have additional information.
 
-The unknown parameters are: the effect of different levels of position in the network $e_i$, the parameters depicting the distribution of threshold in different levels of position $m_i$ and $\alpha$ and the control parameter $k$.
+The unknown parameters are: the influence of different levels of position $e_i$ in the network $e_i$, the parameters depicting the distribution of tolerant threshold in different levels of position $m_i$ and $\alpha$ and the control parameter $k$ in tenure effect.
 
+At time $t$, individual $i$ has dissatisfaction measure:
 
+$$\displaystyle \sigma_i^{(t)}=(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}~~~~\forall i\in \Gamma{(t)}
+$$
 
-The initial condition is detm
+The probability that individual $i$ will resign in time $t$ can be calculated as follows:
 
-We develop the following "Naive recruiting strategy":
-1. When 
-2. 
-3. 
+$$\displaystyle p_i^{(t)}=P(\sigma_i^{(t)}>\zeta_i)=1-P(\sigma_i^{(t)}<\zeta_i)=\frac{1}{2}+\alpha m_i(m_i-\sigma_i^{(t)})$$
 
+We should maximize the following expression:
 
+$$\prod\limits_{i \in \Omega^{(t)}} p_i \prod_{i\in \Gamma^{(t)}\backslash \Omega^{(t)}}(1-p_i)$$
+
+that is:
+
+$$\max \limits_{\{e_i\}_{i=1}^7,\{m_i\}_{i=1}^7,k} \prod_{i \in \Omega^{(t)}} (\frac{1}{2}+\alpha m_i(m_i-(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}) ) $$ 
+$$~~~~~~~~~~~~~~~~~~~~~~~~*\prod_{i\in \Gamma^{(t)}\backslash \Omega^{(t)}}(\frac{1}{2}-\alpha m_i(m_i-(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}) ) $$
+
+If we have collected data for the past $N$ months about the "input" and "output" of this company, we can multiply them together and take natural logarithm. Then it is equivalent to solve the following problem:
+
+$$\max \limits_{\{e_i\}_{i=1}^7,\{m_i\}_{i=1}^7,k} \sum\limits_{\tau=t-N}^{t-1} \sum_{i \in \Omega^{(t)}} \ln (\frac{1}{2}+\alpha m_i(m_i-(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}) ) $$ 
+$$~~~~~~~~~~~~~~~~~~~~~~~~+\sum\limits_{\tau=t-N}^{t-1} \sum\limits_{i \in \Gamma^{(t)} \backslash \Omega^{(t)}} \ln (\frac{1}{2}-\alpha m_i(m_i-(1+kt_i^{(t)2})*\sum_{\tau=t-6}^{t-1}\sum_{j\in \Omega^{(\tau)}}\frac{e_j^{(\tau)}}{d_{ij}^{(\tau)2}}) ) $$
+
+We can then adopt the 
 
 
 \section{The Model Results}
 \lipsum[6]
 
-\section{Validating the Model}
+\section{}
 \lipsum[9]
 
 \section{Conclusions}
