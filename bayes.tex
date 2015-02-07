@@ -1,0 +1,58 @@
+In recent studies, Bayesian learning has been used to analyze information aggregation in social networks, in which individuals modify their decision based on previous outcomes of other individuals in the network. (A cite is needed for the topic Bayesian Learning in Social Networks)
+
+We introduce a novel method to model the churn rate based on Bayesian learning methods. Specifically, we view the churn as a decision making process: suppose an individual $i$ decides whether to churn in a particular month $t$ based on a random variable $u_{i,t} \in \{0, 1\}$, where $u_{i,t} = 0$ indicates a churn, otherwise a non-churn is indicated. $u_{i, t}$ is drawn as follows:
+\begin{enumerate}
+\item Assume two hyperparameters $\alpha_{i, t}$ and $\beta_{i, t}$;
+\item Draw 
+  \begin{equation}
+   p_{i, m} \sim \mathrm{Beta}(\alpha_{i, t}, \beta_{i, t})
+   \label{eq:beta}
+  \end{equation}
+  where $\displaystyle \mathrm{Beta}(x; \alpha, \beta) = \frac{x^{\alpha - 1}(1-x)^{\beta - 1}}{\mathrm{B}(\alpha, \beta)}$, and $\mathrm{B}(\alpha, \beta)$ is the normalization constant.
+\item Draw 
+  \begin{equation}
+	u_{i, t} \sim \mathrm{Bernoulli}(p_{i, t})
+    \label{eq:bernoulli}
+  \end{equation}
+  where $\mathrm{Bernoulli}(x; p) = p^x(1-p)^{1-x}$ is the Bernoulli distribution.
+\end{enumerate}
+
+The distribution of $u_{i, t}$ is a specification of the Beta-Binomial distribution, which has mean $\displaystyle \frac{\alpha}{\alpha + \beta}$ and variance $\displaystyle\frac{\alpha\beta}{(\alpha+\beta)^2}$. This distribution has good properties: on the one hand, the overall churn rate can be easily estimated using the hyperparameters of each individual; on the other hand, since the Beta distribution is the conjugate prior of the Bernoulli distribution, $\alpha$ and $\beta$ can be conveniently updated given observed results. For simplicity, please refer to Pattern Recognition and Machine Learning for more details.
+
+Updating the hyperparameters $\alpha$ and $\beta$ can be viewed as a Bayesian learning process: an increase in $\alpha_i$ decreases $i$'s tendency to churn, while an increase in $\beta_i$ increases this tendency. Moreover, increasing $\alpha_i$ and $\beta_i$ reduces the variance of the Beta distribution, indicating that the individual has a better estimation of $p_i$. We also take the network structure into account, where the outcome of nearer individuals have more influence.
+
+The update process is described in Algorithm \ref{algo:bayes}:
+
+\RestyleAlgo{boxed}
+\begin{algorithm}[H]
+ \KwData{The network $G$, and the churned individuals in the first month $\Omega^{(t)}$}
+
+ initialize t = 0, $\alpha_{i,0}$ and $\beta_{i,0}$ for $\forall i \in \Gamma(t)$\;
+ \While{True}{
+   \For{$\forall i \in \Gamma(t) \backslash \Omega^{(t)}$}{
+   	 $\hat{\alpha} = \hat{\beta} = 0$\;
+     \For {$\forall j \in \Gamma(t) \backslash \Omega^{(t)}$} {
+     	$\hat{\alpha} = \hat{\alpha} + 1 / d_{ij}^{(\tau)2}$\;
+     }
+     \For{$\forall j \in \Omega^{(t)}$} {
+        $\hat{\beta} = \hat{\beta} + 1 / d_{ij}^{(\tau)2}$\;
+     }
+     
+     $\alpha_i = \alpha_i + \frac{\hat{\alpha}}{\hat{\alpha} + \hat{\beta}}$\;
+     $\beta_i = \beta_i + \frac{\hat{\beta}}{\hat{\alpha} + \hat{\beta}}$\;
+   }
+   $\Omega^{(t)} = \Phi$\;
+   \For{$\forall i \in \Gamma(t)$} {
+     Sample $u_{i,t}$ according to \ref{eq:beta} and \ref{eq:bernoulli}\;
+     \eIf {$u_{i, t} = 0$} {
+       $i$ choose to churn\;
+       $\Omega^{(t+1)} = \Omega^{(t+1)} \and \{i\}$;
+     }{
+     	$i$ choose not to churn\;
+     }
+   }
+   $t = t + 1$\;
+ }
+ \caption{Algorithm for the Bayesian Churn Model}
+ \label{algo:bayes}
+\end{algorithm}
