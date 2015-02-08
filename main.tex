@@ -22,10 +22,21 @@ keyword1; keyword2
 \maketitle
 \newpage
 
-
+\setcounter{tocdepth}{2}
 \tableofcontents
+
 \newpage
 \section{Introduction}
+
+\section{Fundamental Assumptions}
+
+\begin{itemize}
+\item No staff retire or get fired. Each staff member make a decision whether to leave. The decision is made through make a probabilistic inference.
+\item Beyond the visible organizational structure, there exists an information network.
+\item A staff member's decision last month will act as information and flows through the information network.
+\item Individuals perceive received information through a learning process. This learning mechanism will affect their decision by changing the probabilistic distribution.
+\item The HR manager can affect the number of people in the positions via different combinations of promotion and recruitment. A combination of promotion and recruitment is called a strategy.
+\end{itemize}
 
 \section{Preliminaries}
 
@@ -94,7 +105,7 @@ $G=\{V(G),E(G)\}$ is the the graph of this network. We then visualize the networ
 \begin{figure}[htb!]
 \small
 \centering
-\includegraphics[width=15cm]{figure_2.png}
+\includegraphics[width=14cm]{figure_2.png}
 \caption{Information Network in ICM} \label{fig:Information Network in ICM}
 \end{figure}
 
@@ -192,100 +203,58 @@ The ways that the model capturing the current situations of the company:
 \end{itemize}
 
 
-The update process is described in Algorithm \ref{algo:bayes}:
 
-\RestyleAlgo{boxed}
-\begin{algorithm}[H]
- \KwData{The network $G$, and the churned individuals in the first month $\Omega^{(t)}$}
-
- initialize t = 0, $\alpha_{i,0}$ and $\beta_{i,0}$ for $\forall i \in \Gamma(t)$\;
- \While{True}{
-   \For{$\forall i \in \Gamma(t) \backslash \Omega^{(t)}$}{
-   	 $\hat{\alpha} = \hat{\beta} = 0$\;
-     \For {$\forall j \in \Gamma(t) \backslash \Omega^{(t)}$} {
-     	$\hat{\alpha} = \hat{\alpha} + 1 / d_{ij}^{(\tau)2}$\;
-     }
-     \For{$\forall j \in \Omega^{(t)}$} {
-        $\hat{\beta} = \hat{\beta} + 1 / d_{ij}^{(\tau)2}$\;
-     }
-     
-     $\alpha_i = \alpha_i + \frac{\hat{\alpha}}{\hat{\alpha} + \hat{\beta}}$\;
-     $\beta_i = \beta_i + \frac{\hat{\beta}}{\hat{\alpha} + \hat{\beta}}$\;
-   }
-   $\Omega^{(t)} = \Phi$\;
-   \For{$\forall i \in \Gamma(t)$} {
-     Sample $u_{i,t}$ according to \ref{eq:beta} and \ref{eq:bernoulli}\;
-     \eIf {$u_{i, t} = 0$} {
-       $i$ choose to churn\;
-       $\Omega^{(t+1)} = \Omega^{(t+1)} \and \{i\}$;
-     }{
-     	$i$ choose not to churn\;
-     }
-   }
-   $t = t + 1$\;
- }
- \caption{Algorithm for the Bayesian Churn Model}
- \label{algo:bayes}
-\end{algorithm}
 
 \subsection{Vacancy-filling Model}
 
-In this part, we consider the process of 
+In this part, we consider modeling the strategic process of HR manager filling the vacancy. This strategic process combines the use of promotion and posting recruitment. To best simulate the current situation of the company, we propose a "baseline" strategy. To dig deeper to see how the strategies can affect the whole dynamic process of the company staff organization, we put out several other strategies to compare. Simulations related are summed up in the next section.
 
 
-\subsubsection{A "baseline" Strategy}
+\subsubsection{"Baseline" Strategy}
 
-To fulfill the first five tasks of modeling the current operation of the company, we model a "baseline" vacancy-filling . As described in the problem, the "naive" manager now has the following features:
+To fulfill the first five tasks. we model the current operation of the company through this "baseline" strategy. This "baseline" strategy on the one hand fits the description of the company presented in the problem, on the other hand, captures the reality very intuitively. \textcolor{red}{How to describe?}
 \begin{itemize}
 \item He does not read the annual evaluation report, thus does not know anything about the matching between staff and positions. In this way, he will not consider changing staff within one level.
-\item His first choice is to choose to promote someone that has reached the experience requirement to fill the vacancy. If no person has reached the requirement, then he will post recruitment need for this position. In other words, he only post recruitment need after seeing there is a vacant position and no person can fill the vacancy.
+\item His first choice is to promote someone that has reached the experience requirement to fill the vacancy. If no person is qualified and , he will then post recruitment need for this position on the next .
 \item If more than one person have meet the experience requirement, he randomly picks one from all these candidates.
 \item If during the time the recruitment need is posted, he finds that there is one person's experience has reached the requirement. He will directly promote and cancel the recruitment post.
 \item He will not promote a clerk because recruiting an inexperienced employee is cheaper and less time-consuming than recruiting a clerk. In other words, a "naive" manager never promotes a clerk.
-\item His maximum effort for recruitment is around 8\%-10\% of the total number, as mentioned in the problem. When the number of vacant positions is higher than his maximum, he ranks the vacant positions from higher level to lower level. That is to say, he will first consider recruiting a manager rather than an employee when they are all vacant. The motivation behind this lies in that the time needed for recruiting a manager is much longer.
+\item His has a maximum possible effort to recruit. He cannot post more recruitment than this maximum because of his ability and resource limit. 
+\item When the number of vacant positions is higher than his maximum, he ranks the vacant positions from higher level to lower level. That is to say, he will first consider recruiting a manager rather than an employee when they are all vacant. The motivation behind this lies in that the time needed for recruiting a manager is much longer.
+\item He can only renew his recruitment post over a length of period, e.g. quarterly or semi-annually.
 \end{itemize}
 
 
 
-\subsubsection{Strategies}
+\subsubsection{Other Strategies}
 
 \paragraph{Pure Strategies}
 The most easily thought of strategies are the pure ones:
 \begin{itemize}
-\item Pure Promoting: Under this strategy, the HR manager exert no external recruiting and promote only qualified individuals 
+\item Pure Promoting: Under this strategy, the HR manager exert no external recruiting and promote only qualified individuals.
+\item Pure recruiting: Under this strategy, the HR manager exert no internal promotion and supplement the vacancy only through posting recruitment.
 \end{itemize}
 
-\paragraph{Greedy Strategy}
+\paragraph{Strategies with Selection Rules}
 
-The scheme for this "greedy" strategy can be described by the following rules:
-\begin{itemize}
-\item When there is a vacancy in the position, the HR manager will first rearrange the staff within the same tier to get a better \textbf{\Large{matching}}.
-\item After this rearrangement, this strategy requires the HR manager to first seek opportunity to make promotions. The main reason is that promotion will save both the time and money needed for recruitment. However, any person getting promotion must first meet the experience requirement.
-\item The above rule will not be obeyed for the situation where an inexperienced employee position is vacant. For recruiting a clerk costs more than recruiting an inexperienced employee directly.
-\item \textit{The total number of recruitment is less than 37 (10\% of the total number 370 as mentioned in the tasks).}(\textbf{argued})
-\item The recruitment will start only after observing a position is vacant and no person can be promoted to fill the vacancy. That is to say, the HR manager is "discreet". He doesn't believe in any prediction of the possible job vacancy under this strategy. In the meanwhile, he will place job vacancy in the higher level in higher order when considering recruiting. In other words, because of the upper limit of the total recruitment, there might be situations where vacant positions needing recruiting cannot be satisfied all. Then he will place the preceding order. The main consideration behind this lies in the recruitment time for higher tier is usually higher.
-\end{itemize}
+In the baseline model, the HR manager has no selection rule when considering who to promote among qualified candidates. We here propose three possible selection rules that can possibly improve the staff management. Selection rule is the only difference between baseline strategy and the following ones.
 
-As we can see, supplement strategy effectively control the matching problem. Consider the company has been operating under this strategy for an enough long period of time, the friction will be all eliminated by this strategy because of the first step.
+\textit{Select by Experience Length}: When the HR manager judges who to promote, he chooses to promote the most experienced one among all the qualified candidates.
 
-\paragraph{Prediction Strategy}
+\textit{Select by Likelihood to Leave}: When considering who to promote, the HR manager chooses to promote the one most likely to leave among all the qualified candidates
+
+\textit{Select by Centrality within Information Network}: When considering who to promote, the HR manager promotes the one that has the highest centrality in the information network among all the qualified candidates.
 
 
-\paragraph{Matching Strategy}
+\subsection{Model Modification Possibilities}
 
+\paragraph{"Good News" and "Bad News"}
 
-\paragraph{Centrality Strategy}
-
-
-\subsubsection{Model Modification Possibilities}
-
-\paragraph{The Difference between Good News and Bad News}
-
-\paragraph{Information Intensity}
+\paragraph{Information Intensity} 
 
 Both in reality and in the context of this problem, a certain amount of experience is required for getting promotion. Usually, the higher tier to be promoted into, the longer the experience is needed. In the model, we assume that the required experience for promotion only takes into account the time length of being in the former level. E.g. only the time length of being in the level of junior manager set to be requirement for consideration of promoting senior manager. Suppose the experience requirement for each level of position is represented by $R_i, i = 1, 2...,7$. This can be a rich set of tools that the HR manager can use to control the organizational structure and even churn rate.
 
-\paragraph{Modeling Matching and Frictions}
+\paragraph{Matching and Frictions} 
 
 
 
@@ -300,8 +269,6 @@ Both in reality and in the context of this problem, a certain amount of experien
 
 \subsection{Test the Effectiveness of Adjusting Experience Requirement}
 
-
-\section{Model Applications}
 
 \subsection{Measure Productivity}
 
@@ -336,7 +303,14 @@ We define the direct effect pf the resign on organizational productivity as the 
 
 $$D^{(t)}_{effect}=\sum\limits_{i\in\Omega^{(t)}}w_i^{(t)}*p_i^{(t)}$$ $$I^{(t)}_{effect}=\sum\limits_{i\in\Gamma^{(t)}\backslash\Omega^{(t)}} w_i^{(t)}*(\frac{1}{1+\alpha\ln{(1+e^{-1}\sigma_i^{(t)})}}-\frac{1}{1+\alpha\ln{(1+\sigma_i^{(t+1)})}})(S_i^{(t)}+T_i^{(t)}*t_i^{(t)})$$
 
-Using these definitions, we can calculate the loss of organizational productivity associated with the resign of staff and decompose it into direct effect and indirect effect. \textcolor{red}{For reason discussed before}, we report the results from the beginning of the second year.
+Using these definitions, we can calculate the loss of organizational productivity associated with the resign of staff and decompose it into direct effect and indirect effect. 
+
+\begin{figure}[htb!]
+\centering
+\includegraphics[width=14cm]{Productivity_figure.eps}
+\caption{Effect on Organizational Productivity} 
+\label{fig:3}
+\end{figure}
 
 
 \subsection{Budget Calculation}
@@ -345,13 +319,35 @@ In this part, we set up to consider the budget related to human capital the comp
 
 We explicitly run simulation of our company and the results are shown below:
 
+\begin{figure}[htb!]
+\centering
+\includegraphics[width=14cm]{cost_figure.eps}
+\caption{Recruitment and Training Cost} 
+\label{fig:2}
+\end{figure}
+
 \section{Team Science and Multi-layers}
 There are several possible extensions to the models we have described before. These extensions are used to modify some of the bold but kind of restrictive assumptions made before and help to come closer to reality. Note that some of these new extensions need information about the real data of the company. Besides, being more precise means in the other direction that the extended models will not be as powerful and encompassing as the baseline models. Though the insights they are shedding lights on are basically the same.
 
 \subsection{Incorporating Team Science}
 
+\subsubsection{Shared Cognition and Dissatisfaction Parameter}
+
+\subsubsection{Stimulus of New Staff Members}
+
+\subsubsection{Team Training}
+
 \subsection{Incorporating Multi-layers}
-In this section, we will take into consideration the progress made by rencent studies about multi-layer networks. 
+
+In this section, we will explore the progress made by recent studies about multi-layer networks and apply this concept to our company context to help HR achieve better human resource management.
+
+In previous sections, we have formulated a model based on information network. This network describe how information flows among all individuals. However, the interpersonal relation is much more complicated. people are entering and exiting the company all the time. More importantly, people have different types of interaction. Here are some examples of different types of interactions besides information flow:
+
+\begin{itemize}
+\item People in the same office work as a team and have more contact with each other. 
+\item People in the vertical structure have line relation, which means an individual is directly led by the other.
+\item People can be close friends with each other regardless of their positions.
+\end{itemize}
 
 
 
