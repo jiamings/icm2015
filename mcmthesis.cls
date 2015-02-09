@@ -37,7 +37,7 @@
 \newcommand{\skv}[1]{\kvsetkeys{MCM}{#1}}
 \DeclareBoolOption[true]{sheet}
 \DeclareComplementaryOption{nosheet}{sheet}
-\DeclareBoolOption[true]{abstract}
+\DeclareBoolOption[false]{abstract}
 \DeclareComplementaryOption{noabstract}{abstract}
 \DeclareStringOption[0000]{tcn}[0000]
 \DeclareDefaultOption{\relax}
