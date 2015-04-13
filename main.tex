@@ -168,8 +168,8 @@ To summarize, we introduce an algorithm for this process. For every individual $
 \begin{itemize}
 \item Sample the churn result for month $t$ using hyperparameters $\alpha_{i,t}$ and $\beta_{i,t}$, and determine whether to stay or to leave;
 \item If $i$ decides to stay, initialize two variables $\hat{\alpha}$ and $\hat{\beta}$ for update;
-\item For every individual $j$ in $\Gamma^{(t)} \backslash \Theta^{(t)}$(individuals who stays), update $\hat{\alpha} = \hat{\alpha} + \frac{1}{d_{ij}^{(t)}}$;
-\item For every individual $j$ in $\Omega^{(t)}$, update $ \hat{\beta} = \hat{\beta} + \frac{1}{d_{ij}^{(t)}}$;
+\item For every individual $j$ in $\Gamma^{(t)} \backslash \Theta^{(t)}$(individuals who stays), update $\hat{\alpha} = \hat{\alpha} + \frac{1}{(d_{ij}^{(t)})^2}$;
+\item For every individual $j$ in $\Omega^{(t)}$, update $ \hat{\beta} = \hat{\beta} + \frac{1}{(d_{ij}^{(t)})^2}$;
 \item Update $ \alpha_{i}^{(t+1)}=\alpha_{i}^{(t)}+\frac{\hat{\alpha}}{\hat{\alpha}+\hat{\beta}}$, and $ \beta_{i}^{(t+1)}=\beta_{i}^{(t)}+\frac{\hat{\beta}}{\hat{\alpha}+\hat{\beta}}$
 \end{itemize}
 
@@ -235,7 +235,7 @@ In order to get reasonable simulation results, we set some parameters. This, on 
 \begin{itemize}
 \item The required experience for seven levels are 48 months, 48 months, 24 months, 24 months, 12 months, 0 month respectively (from higher level to lower level).
 \item The time period for updating the recruitment post is 6 months.
-\item The $\alpha$ and $\beta$ for different levels of positions are144, 120, 64, 48, 32, 24, 24 (from higher level to lower level).
+\item The $\alpha + \beta$ for different levels of positions ar e144, 120, 64, 48, 32, 24, 24 (from higher level to lower level) respectively.
 \item The maximum recruiting effort for the HR manager is 9\% of 370 (average of 8\%-10\%) for most cases. Any change in this parameter will be mentioned.
 \item All the data given related to recruiting time, recruiting cost, annual salary and training cost are deterministic.
 \end{itemize}
@@ -247,14 +247,14 @@ In this section, we first present our basic simulation results of current situat
 Another feature of ICM is that churn rate is steadily increasing. \footnote{Although our model should maintain the same churn rate in expectation, we can make slight, tractable modifications to simulate the steadily increasing process. Given our current $\alpha$ and $\beta$, if we want next month's churn rate to increase by $\Delta p$, we can achieve that by multiplying $\hat{\beta}$ by  $1 + \Delta p \cdot \frac{(\alpha+\beta)^2+(\alpha+\beta)}{\beta}$. Hence, the expected $\beta / (\alpha + \beta)$ for next month increases by $\Delta p$}The simulation result in Figure \ref{fig:cnf} does exhibit similar trend. We show the overall churn rate in next five years. In spite of a couple of outliers, the major trend can be easily seen in the boxplot. The median value of churn rate has shown a slow but steady increase, from 18\% in the first year to 20\% in the fifth year.
 
 \begin{figure}[htb!]
-\includegraphics[width=16cm]{task1_2.eps}
+\includegraphics[width=16cm]{figures/task1_2.eps}
 \caption{Churn Rates of Different Levels} 
 \label{fig:cdl}
 \end{figure}
 
 \begin{figure}[htb!]
 \centering
-\includegraphics[width=9cm]{task1.eps}
+\includegraphics[width=9cm]{figures/task1.eps}
 \caption{Overall Churn Rates in Next Five Years} 
 \label{fig:cnf}
 \end{figure}
@@ -293,7 +293,7 @@ $$DE^{(t)}=\sum\limits_{i\in\Omega^{(t)}}w_i^{(t)}*p_i^{(t)}$$ $$IE^{(t)}=\sum\l
 
 \begin{figure}[htb!]
 \centering
-\includegraphics[width=14cm]{Productivity_figure.eps}
+\includegraphics[width=14cm]{figures/Productivity_figure.eps}
 \caption{Effect on Organizational Productivity} 
 \label{fig:3}
 \end{figure}
@@ -313,11 +313,11 @@ We run simulations of the company and show the calculated cost below:
 \begin{figure}[htbp]
 \begin{minipage}[t]{0.5\linewidth}
 \centering
-\includegraphics[width=1.0\textwidth]{Recruitment_Cost.eps}
+\includegraphics[width=1.0\textwidth]{figures/Recruitment_Cost.eps}
 \end{minipage}%
 \begin{minipage}[t]{0.5\linewidth}
 \centering
-\includegraphics[width=1.0\textwidth]{Training_Cost.eps}
+\includegraphics[width=1.0\textwidth]{figures/Training_Cost.eps}
 \end{minipage}%
 \label{fig:bb5}
 \caption{Budget Calculation for Next Five Years}
@@ -334,7 +334,7 @@ We run simulations fifty times under each churn rate and take average.  Figure \
 
 \begin{figure}[htb!]
 \centering
-\includegraphics[width=16cm]{Task4_1.eps}
+\includegraphics[width=16cm]{figures/Task4_1.eps}
 \caption{Evolution of the Company in Next Twenty Years Under Different Churn Rates} 
 \label{fig:churn}
 \end{figure}
@@ -345,7 +345,7 @@ To sustain in current percentage of status, HR manager should change the recruit
 
 \begin{figure}[htb!]
 \centering
-\includegraphics[width=15cm]{Task4_2.eps}
+\includegraphics[width=15cm]{figures/Task4_2.eps}
 \caption{Comparison of Different Churn Rate under New Promotion Strategy} 
 \label{fig:churn-box}
 \end{figure}
@@ -466,7 +466,7 @@ In this section, we implement sensitivity analysis for our model. Specifically, 
 
 \begin{figure}[htb!]
 \centering
-\includegraphics[width=16cm]{Sensitivity.eps}
+\includegraphics[width=16cm]{figures/Sensitivity.eps}
 \caption{Sensitivity Analysis on Parameter $\alpha$} 
 \label{fig:sa}
 \end{figure}
